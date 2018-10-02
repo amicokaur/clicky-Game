@@ -3,6 +3,7 @@ import FriendCard from "./components/FriendCard";
 import Wrapper from "./components/Wrapper";
 import Title from "./components/Title";
 import friends from "./friends.json";
+import Navbar from "./components/Navbar"
 import "./App.css";
 
 class App extends Component {
@@ -12,7 +13,9 @@ class App extends Component {
       item.clicked = false;
       return item;
     }),
-    score:0
+    score:0,
+    topScore:0
+    
   };
 
   shuffleThisArray = (arra1) => {
@@ -33,30 +36,48 @@ class App extends Component {
   }
 
   wasClicked = id => {
+    debugger;
+    let continueGame= true;
+    let topScore;
     // Filter this.state.friends for friends with an id not equal to the id being removed
     let score = this.state.score;
     const friends = this.state.friends.map(item => {
       if (item.id ===id){
         if (item.clicked){
-          score = 0;
-          alert("you have lost")
+          continueGame= false; 
         } 
-      }
-      else{
-        item.clicked = true;
-        score++;
+        else{
+          item.clicked = true;
+          score++;
+        }
       }
       return item
     });
     // Set this.state.friends equal to the new friends array
-    this.setState({ score:score,friends:friends });
+    if(continueGame) {
+      this.setState({ score:score,friends:friends });
+    } else{
+      const friends = this.state.friends.map(item => {
+        item.clicked = false;
+        return item;
+      })
+      if (this.state.score > this.state.topScore) {
+        topScore = this.state.score;
+      } else{
+        topScore = this.state.topScore;
+      }
+      const score = 0;
+      this.setState({friends:friends, score:score, topScore:topScore})
+    
+    }
+    
   };
 
   // Map over this.state.friends and render a FriendCard component for each friend object
   render() {
     return (
       <Wrapper>
-        <Title>Clicky-Game</Title>
+        <Navbar score = {this.state.score} topScore= {this.state.topScore}/>
         {this.shuffleThisArray(this.state.friends).map(friend => (
           <FriendCard
       
